@@ -6,6 +6,7 @@ import Modal from '@/Components/Modal.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import Proyectos from '../Components/Panel/Proyectos.vue'
 import axios from 'axios';
 
 const modalCreateProject = ref(false)
@@ -27,7 +28,12 @@ const createProject = async()=>{
         alert("Por favor, rellene todos los campos")
     }
     else {
-        await axios.post('/crearprojecto',{form})
+        await axios.post('/crearproyecto',{
+            nombre: form.nombre,
+            descripcion: form.descripcion,
+            fecha_inicio: form.fecha_inicio,
+            fecha_finalizacion: form.fecha_finalizacion
+        })
     }
 }
 </script>
@@ -48,6 +54,7 @@ const createProject = async()=>{
                             proyecto</button>
                     </div>
                 </div>
+                <Proyectos />
             </div>
         </div>
         <Modal :show="modalCreateProject" @close="toggleModal">
@@ -81,20 +88,6 @@ const createProject = async()=>{
                         />
 
                         <InputError class="mt-2" :message="form.errors.descripcion" />
-                    </div>
-                    <div>
-                        <InputLabel for="fecha_inicio" value="Fecha de inicio" />
-
-                        <TextInput
-                            id="fecha_inicio"
-                            type="date"
-                            class="mt-1 block w-full"
-                            v-model="form.fecha_inicio"
-                            required autofocus
-                            autocomplete="fecha_inicio"
-                        />
-
-                        <InputError class="mt-2" :message="form.errors.fecha_inicio" />
                     </div>
                     <div>
                         <InputLabel for="fecha_inicio" value="Fecha de inicio" />

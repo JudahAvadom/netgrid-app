@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProyectosController;
+use App\Http\Controllers\TareasController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,5 +40,23 @@ Route::middleware('auth')->group(function () {
 Route::post('users/{id}', function ($id) {
 
 });
+
+
+/**
+ * Rutas para proyectos
+ */
+Route::post('/crearproyecto', [ProyectosController::class, 'crear']);
+Route::get('/consultarproyecto', [ProyectosController::class, 'consultar']);
+Route::delete('/eliminarproyecto/{id}', [ProyectosController::class, 'eliminar']);
+Route::get('/proyecto', function () {
+    return Inertia::render('Proyecto');
+})->middleware(['auth', 'verified'])->name('proyecto');
+
+/**
+ * Rutas para tareas
+ */
+Route::post('/creartarea', [TareasController::class, 'crearTarea']);
+Route::post('/consultartareas', [TareasController::class, 'consultarTareas']);
+Route::put('/actualizartarea', [TareasController::class, 'actualizar']);
 
 require __DIR__.'/auth.php';

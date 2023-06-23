@@ -8,18 +8,20 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('tareas', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('project_id');
-            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
+            $table->unsignedInteger('proyecto_id');
+            $table->foreign('proyecto_id')->references('id')->on('proyectos')->onDelete('cascade');
             $table->string('nombre');
+            $table->string('descripcion');
             $table->string('estado');
+            $table->integer('creado_por');
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('tareas');
     }
 };
