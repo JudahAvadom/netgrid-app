@@ -95,6 +95,8 @@ const crearTarea = async() =>{
                         <option value=""></option>
                         <option value="todo">Por hacer</option>
                         <option value="progress">En progreso</option>
+                        <option value="review">En revision</option>
+                        <option value="completed">Completada</option>
                     </select>
                 </div>
                 <div class="my-2">

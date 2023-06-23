@@ -58,5 +58,6 @@ Route::get('/proyecto', function () {
 Route::post('/creartarea', [TareasController::class, 'crearTarea']);
 Route::post('/consultartareas', [TareasController::class, 'consultarTareas']);
 Route::put('/actualizartarea', [TareasController::class, 'actualizar']);
+Route::delete('/eliminartarea/{id}', [TareasController::class, 'eliminar']);
 
 require __DIR__.'/auth.php';

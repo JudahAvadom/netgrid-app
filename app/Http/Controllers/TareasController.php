@@ -46,6 +46,22 @@ class TareasController extends Controller
      * Actualizar tareas
      */
     public function actualizar(Request $request){
-        return "Hola";
+        $id=$request->id;
+        $nombre = $request->nombre;
+        $estado = $request->estado;
+        $descripcion = $request->descripcion;
+        $affected = DB::table('tareas')
+            ->where('id', $id)
+            ->update(['nombre' => $nombre, 'estado'=>$estado, 'descripcion'=>$descripcion]);
+        return "SUCCESS";
+    }
+
+    /**
+     * Eliminar tarea
+     */
+    public function eliminar(Request $request){
+        $id = $request->id;
+        $query= DB::table('tareas')->where('id', $id)->delete();
+        return "SUCCESS";
     }
 }

@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-// import Sortable from 'sortablejs';
+import { onMounted, onUpdated, ref } from 'vue';
+import Sortable from 'sortablejs';
 import axios from 'axios';
 import Modal from '@/Components/Modal.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -12,6 +12,7 @@ const tareas = ref()
 const modalEditarTarea = ref(false)
 const nombreTarea = ref()
 const descripcionTarea = ref()
+const table = ref(false)
 
 const props = defineProps({
     id: {
@@ -22,16 +23,19 @@ const props = defineProps({
 });
 
 const form = useForm({
-    id: props.id,
+    id: '',
     nombre: '',
     estado: '',
     descripcion: ''
 });
 
-const toggleModal = (nombre,descripcion) => {
+const toggleModal = (id,nombre,descripcion) => {
     modalEditarTarea.value = !modalEditarTarea.value;
     nombreTarea.value = nombre;
     descripcionTarea.value = descripcion;
+    form.id = id;
+    form.nombre = nombre;
+    form.descripcion = descripcion;
 };
 
 const consultar = async () => {
@@ -40,31 +44,54 @@ const consultar = async () => {
     })
     if (data.length > 0) {
         tareas.value = data
-        // sort()
+        table.value = true
     }
 }
 
-const actualizarTarea = ()=>{
-    axios.put('/actualizartarea')
+onUpdated(async()=>{
+    if (table.value && tareas.value.length > 0) {
+        await sort()
+    }
+})
+
+const actualizarTarea = async()=>{
+    if (form.estado == "") {
+        alert("Defina el estado de la tarea")
+    }
+    else {
+        const {data} = await axios.put('/actualizartarea',{
+            id:form.id,
+            nombre:form.nombre,
+            descripcion:form.descripcion,
+            estado:form.estado
+        })
+        if (data=='SUCCESS') {
+            location.reload();
+        }
+    }
 }
 
-/*const sort = async () => {
-    try {
-        var el = document.getElementById('todo');
-        var progress = document.getElementById('progress');
-        new Sortable(el, {
-            draggable: ".item",
-            group: 'shared',
-            animation: 150
-        });
-        new Sortable(progress, {
-            draggable: ".item",
-            group: 'shared',
-            animation: 150
-        });
-    } catch (error) {
+const sort = async () => {
+    var el = document.getElementById('todo');
+    var progress = document.getElementById('progress');
+    new Sortable(el, {
+        draggable: ".item",
+        group: 'shared',
+        animation: 150
+    });
+    new Sortable(progress, {
+        draggable: ".item",
+        group: 'shared',
+        animation: 150
+    });
+}
+
+const eliminarTarea = async() =>{
+    const {data}= await axios.delete('/eliminartarea/'+ form.id)
+    if (data=='SUCCESS') {
+        location.reload();
     }
-}*/
+}
 
 onMounted(() => {
     consultar();
@@ -84,18 +111,43 @@ onMounted(() => {
                                 <div class="bg-slate-200 p-2 m-2 rounded-lg" v-if="tareas.estado == 'todo'">
                                     <span class="text-lg">{{ tareas.nombre }}</span>
                                     <div>{{ tareas.descripcion }}</div>
-                                    <div><button @click="toggleModal(tareas.nombre, tareas.descripcion)" class="text-sm bg-slate-400 p-1 rounded-lg">Editar</button></div>
+                                    <div><button @click="toggleModal(tareas.id,tareas.nombre, tareas.descripcion)" class="text-sm bg-slate-400 p-1 rounded-lg">Editar</button></div>
                                 </div>
                             </div>
                         </ul>
                     </div>
                     <div>
                         <span class="text-xl px-2">En progreso</span>
-                        <ul id="progress">
+                        <ul id="progress" v-for="tareas in tareas">
                             <div class="item">
-                                <div class="bg-slate-200 p-2 m-2 rounded-lg" v-if="tareas.estado == 'En progreso'">
+                                <div class="bg-slate-200 p-2 m-2 rounded-lg" v-if="tareas.estado == 'progress'">
                                     <span class="text-lg">{{ tareas.nombre }}</span>
-                                    <div>descripcion</div>
+                                    <div>{{ tareas.descripcion }}</div>
+                                    <div><button @click="toggleModal(tareas.id,tareas.nombre, tareas.descripcion)" class="text-sm bg-slate-400 p-1 rounded-lg">Editar</button></div>
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="text-xl px-2">En revision</span>
+                        <ul id="progress" v-for="tareas in tareas">
+                            <div class="item">
+                                <div class="bg-slate-200 p-2 m-2 rounded-lg" v-if="tareas.estado == 'review'">
+                                    <span class="text-lg">{{ tareas.nombre }}</span>
+                                    <div>{{ tareas.descripcion }}</div>
+                                    <div><button @click="toggleModal(tareas.id,tareas.nombre, tareas.descripcion)" class="text-sm bg-slate-400 p-1 rounded-lg">Editar</button></div>
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="text-xl px-2">Completada</span>
+                        <ul id="progress" v-for="tareas in tareas">
+                            <div class="item">
+                                <div class="bg-slate-200 p-2 m-2 rounded-lg" v-if="tareas.estado == 'completed'">
+                                    <span class="text-lg">{{ tareas.nombre }}</span>
+                                    <div>{{ tareas.descripcion }}</div>
+                                    <div><button @click="toggleModal(tareas.id,tareas.nombre, tareas.descripcion)" class="text-sm bg-slate-400 p-1 rounded-lg">Editar</button></div>
                                 </div>
                             </div>
                         </ul>
@@ -114,7 +166,7 @@ onMounted(() => {
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.nombre"
-                    :value="nombreTarea"
+                    :defaultValue="nombreTarea"
                     required autofocus
                     autocomplete="nombre"
                 />
@@ -127,7 +179,7 @@ onMounted(() => {
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.descripcion"
-                    :value="descripcionTarea"
+                    :defaultValue="descripcionTarea"
                     required autofocus
                     autocomplete="descripcion"
                 />
@@ -142,10 +194,13 @@ onMounted(() => {
                 >
                     <option value="todo">Por hacer</option>
                     <option value="progress">En progreso</option>
+                    <option value="review">En revision</option>
+                    <option value="completed">Completada</option>
                 </select>
             </div>
             <div class="my-2">
-                <button @click="actualizarTarea" class="bg-green-500 text-white p-2 rounded-md">Actualizar tarea</button>
+                <button @click="actualizarTarea" class="bg-green-500 text-white p-2 rounded-md mr-2">Actualizar tarea</button>
+                <button @click="eliminarTarea" class="bg-red-500 text-white p-2 rounded-md">Eliminar tarea</button>
             </div>
         </div>
     </Modal>
