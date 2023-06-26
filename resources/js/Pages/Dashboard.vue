@@ -28,12 +28,15 @@ const createProject = async()=>{
         alert("Por favor, rellene todos los campos")
     }
     else {
-        await axios.post('/crearproyecto',{
+        const {data}=await axios.post('/crearproyecto',{
             nombre: form.nombre,
             descripcion: form.descripcion,
             fecha_inicio: form.fecha_inicio,
             fecha_finalizacion: form.fecha_finalizacion
         })
+        if (data=='SUCCESS') {
+            location.reload();
+        }
     }
 }
 </script>

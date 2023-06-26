@@ -3,9 +3,11 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProyectosController;
 use App\Http\Controllers\TareasController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +53,9 @@ Route::delete('/eliminarproyecto/{id}', [ProyectosController::class, 'eliminar']
 Route::get('/proyecto', function () {
     return Inertia::render('Proyecto');
 })->middleware(['auth', 'verified'])->name('proyecto');
+Route::get('/admin', function () {
+    return Inertia::render('Admin');
+})->middleware(['auth', 'verified'])->name('admin');
 
 /**
  * Rutas para tareas
@@ -59,5 +64,14 @@ Route::post('/creartarea', [TareasController::class, 'crearTarea']);
 Route::post('/consultartareas', [TareasController::class, 'consultarTareas']);
 Route::put('/actualizartarea', [TareasController::class, 'actualizar']);
 Route::delete('/eliminartarea/{id}', [TareasController::class, 'eliminar']);
+Route::post('/ordentareas', [TareasController::class, 'ordenarTareas']);
+
+/**
+ * Rutas de admin
+ */
+Route::get('/usuariologgeado', [AdminController::class, 'usuarioLoggeado']);
+Route::get('/listausuarios', [AdminController::class, 'listaUsuarios']);
+Route::post('/editarusuario', [AdminController::class, 'editarUsuarios']);
+Route::post('/eliminarusuario', [AdminController::class, 'eliminarUsuario']);
 
 require __DIR__.'/auth.php';

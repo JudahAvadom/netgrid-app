@@ -1,13 +1,24 @@
 <script setup>
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { ref, onMounted } from 'vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import axios from 'axios';
+import _ from 'underscore'
 
+const role = ref('')
 const showingNavigationDropdown = ref(false);
+
+const getCurrentUser = async() => {
+    const {data} = await axios.get('/usuariologgeado');
+    var cont = 0;
+    role.value = data;
+}
+
+onMounted(()=>{
+    getCurrentUser();
+})
 </script>
 
 <template>
@@ -17,12 +28,17 @@ const showingNavigationDropdown = ref(false);
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
-                        <div class="flex">
+                        <div class="flex" v-if="role">
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                    Inicio
+                                </NavLink>
+                            </div>
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex" v-if="role=='admin'">
+                                <NavLink :href="route('admin')" :active="route().current('admin')">
+                                    Panel de Administracion
                                 </NavLink>
                             </div>
                         </div>

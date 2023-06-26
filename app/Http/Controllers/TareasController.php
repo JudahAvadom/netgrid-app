@@ -64,4 +64,22 @@ class TareasController extends Controller
         $query= DB::table('tareas')->where('id', $id)->delete();
         return "SUCCESS";
     }
+
+    /**
+     * Ordenar tareas
+     */
+    public function ordenarTareas(Request $request){
+        $orden = $request->orden;
+        if ($orden == 'ASC') {
+            $query = DB::table('tareas')
+                ->orderBy('created_at', 'asc')
+                ->get();
+        }
+        else {
+            $query = DB::table('tareas')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+        return $query;
+    }
 }
