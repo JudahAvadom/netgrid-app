@@ -42,6 +42,10 @@ class AdminController extends Controller
      * Eliminar usuario
      */
     public function eliminarUsuario(Request $request){
-
+        $id = $request->id;
+        $affected = DB::table('users')
+            ->where('id', $id)
+            ->delete();
+        return "SUCCESS";
     }
 }

@@ -22,7 +22,7 @@ const listaUsuarios = async () => {
 }
 
 const eliminarUsuario = async(id) => {
-    const {data} = await axios.post('/editarusuario',{
+    const {data} = await axios.post('/eliminarusuario',{
         id
     })
     if (data=='SUCCESS') {
